@@ -7,12 +7,12 @@ sequenceDiagram
     activate server
     server-->>browser: HTML document
 
-    browser->>server: GET  https://studies.cs.helsinki.fi/exampleapp/main.css
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
     server-->>browser:  CSS file
     deactivate server
 
-    browser->>server: GET  https://studies.cs.helsinki.fi/exampleapp/spa.js
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
     activate server
     server-->>browser: Js file
     deactivate server
@@ -21,14 +21,7 @@ sequenceDiagram
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
-    server-->>browser: [ ... , {
-        "content": "Well Hello",
-        "date": "2025-03-23T14:00:53.891Z"
-    },
-    {
-        "content": "",
-        "date": "2025-03-23T14:01:34.268Z"
-    }, ... ]
+    server-->>browser: [...,{"content":"Well Hello","date":"2025-03-23T14:00:53.891Z"},{"content":"","date":"2025-03-23T14:01:34.268Z"},...]
     deactivate server
 
     Note right of browser: El navegador ejecuta la callback function que renderiza las notas , incluyendo la nueva.
