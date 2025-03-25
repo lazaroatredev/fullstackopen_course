@@ -14,17 +14,21 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
 
+  const all = good + neutral + bad;
+  const average = all !== 0 ? (good - bad) / all : 0;
+  const positive = good !== 0 ?  (good / all) * 100 : 0
+
   const handleGood = () => {
-    setGood(good + 1)
-  }
+    setGood(good + 1);
+  };
 
   const handleNeutral = () => {
-    setNeutral(neutral + 1)
-  }
+    setNeutral(neutral + 1);
+  };
 
   const handleBad = () => {
-    setBad(bad + 1)
-  }
+    setBad(bad + 1);
+  };
 
   return (
     <div>
@@ -33,9 +37,12 @@ const App = () => {
       <Button text="neutral" onClick={handleNeutral} />
       <Button text="bad" onClick={handleBad} />
       <Heading text="statistics" />
-      <Display name="good" counter={good}/>
-      <Display name="neutral" counter={neutral}/>
-      <Display name="bad" counter={bad}/>
+      <Display name="good" counter={good} />
+      <Display name="neutral" counter={neutral} />
+      <Display name="bad" counter={bad} />
+      <Display name="all" counter={all} />
+      <Display name="average" counter={average} />
+      <Display name="positive" counter={positive} />
     </div>
   );
 };
