@@ -11,22 +11,28 @@ const Part = ({ part, exercise }) => {
 };
 
 const Content = ({ parts }) => {
-  const [part1, part2, part3] = parts;
+  const [part1, part2, part3 , part4] = parts;
 
   return (
     <>
       <Part part={part1.name} exercise={part1.exercises} />
       <Part part={part2.name} exercise={part2.exercises} />
       <Part part={part3.name} exercise={part3.exercises} />
+      <Part part={part4.name} exercise={part4.exercises} />
     </>
   );
 };
 
 const Course = ({course}) => {
+
+  const reduceFunction = (acum , course) => acum + course.exercises
+  const totalCourses = course.parts.reduce(reduceFunction , 0)
+
   return (
     <>
       <Header course={course.name} />
       <Content parts={course.parts} />
+      <p><b>total of {totalCourses} exercises</b></p>
       {/* <Total parts={course.parts} /> */}
     </>
   );
@@ -64,6 +70,11 @@ const App = () => {
         name: "State of a component",
         exercises: 14,
         id: 3,
+      },
+      {
+        name: "Redux",
+        exercises: 11,
+        id: 4,
       },
     ],
   };
