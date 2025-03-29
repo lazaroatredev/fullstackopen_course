@@ -3,7 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import { useEffect } from "react";
-import axios from "axios";
+import { create, deletePerson, getAll, update } from "./services/services";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,14 +12,38 @@ const App = () => {
   const [show, setShow] = useState("");
 
   const fetchEffect = () => {
-    const fetchPersons = axios.get("http://localhost:3001/persons")
-    fetchPersons.then( (response)=> {
-      const personsArray = response.data
-      setPersons(personsArray)
-    })
+    getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  };
+  useEffect(fetchEffect, []);
+
+  const updatePersons = (id, personObject) => {
+    update(id, personObject).then((data) => {
+      setPersons(
+        persons.map((person) => (person.id === data.id ? data : person))
+      );
+    });
   };
 
-  useEffect(fetchEffect, []);
+  const postPerson = (personObject) => {
+    create(personObject).then((data) => {
+      setPersons(persons.concat(data));
+    });
+  };
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`¿Eliminar a ${name}?`)) {
+      deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch((error) => {
+          console.error("Error eliminando:", error);
+          alert("No se pudo eliminar el registro");
+        });
+    }
+  };
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -29,23 +53,39 @@ const App = () => {
     setNewNumber(e.target.value);
   };
 
-  const isNameExist = (name) =>
-    persons.some((person) => person.name.toLowerCase() === name.toLowerCase());
+  // const isNameExist = (name) => {
+  //   const existingPerson = persons.find((person) => person.name.toLowerCase() === name.toLowerCase())
+  //   updatePersons(existingPerson.id ,{ newName , newNumber}).then(() => {
+  //     setPersons(persons.map((person)=> person.id === existingPerson.id ? person : { newName , newNumber}))
+  //   })
+  //   return persons.some((person) => person.name.toLowerCase() === name.toLowerCase());
+  // }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submiting...", newName);
+    const existingPerson = persons.find(
+      (person) => person.name?.toLowerCase() === newName.toLowerCase()
+    );
     const newPerson = {
       name: newName,
       phoneNumber: newNumber,
     };
-    if (isNameExist(newName)) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
-      return;
+    if (existingPerson) {
+      if (window.confirm(`${newName} ya existe. ¿Reemplazar número?`)) {
+        const newPerson = {
+          ...existingPerson,
+          phoneNumber: newNumber,
+        };
+        updatePersons(existingPerson.id, newPerson);
+        setPersons(
+          persons.map((person) =>
+            person.id === existingPerson.id ? newPerson : person
+          )
+        );
+      }
+    } else {
+      postPerson(newPerson);
     }
-    setPersons(persons.concat(newPerson));
     setNewName("");
     setNewNumber("");
   };
@@ -71,7 +111,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} handleDelete={handleDelete} />
     </div>
   );
 };
