@@ -4,12 +4,15 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import { useEffect } from "react";
 import { create, deletePerson, getAll, update } from "./services/services";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [show, setShow] = useState("");
+  const [message, setMessage] = useState("");
+  const [errorMessage , setErrorMessage] = useState("")
 
   const fetchEffect = () => {
     getAll().then((initialPersons) => {
@@ -23,6 +26,16 @@ const App = () => {
       setPersons(
         persons.map((person) => (person.id === data.id ? data : person))
       );
+      setMessage(`Updated ${personObject.name}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    }).catch((error)=>{
+      console.log(error.message)
+      setErrorMessage(`Information of ${personObject.name} has already removed from server`);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     });
   };
 
@@ -30,6 +43,10 @@ const App = () => {
     create(personObject).then((data) => {
       setPersons(persons.concat(data));
     });
+    setMessage(`Added ${personObject.name}`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const handleDelete = (id, name) => {
@@ -52,14 +69,6 @@ const App = () => {
   const handleNumberChange = (e) => {
     setNewNumber(e.target.value);
   };
-
-  // const isNameExist = (name) => {
-  //   const existingPerson = persons.find((person) => person.name.toLowerCase() === name.toLowerCase())
-  //   updatePersons(existingPerson.id ,{ newName , newNumber}).then(() => {
-  //     setPersons(persons.map((person)=> person.id === existingPerson.id ? person : { newName , newNumber}))
-  //   })
-  //   return persons.some((person) => person.name.toLowerCase() === name.toLowerCase());
-  // }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -101,6 +110,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
+      <Notification message={errorMessage} className="error"/>
       <Filter show={show} handleSearch={handleSearch} />
       <h2>Add a new</h2>
       <PersonForm
